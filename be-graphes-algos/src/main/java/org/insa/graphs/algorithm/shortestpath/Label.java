@@ -8,7 +8,7 @@ public class Label implements Comparable<Label>{
 	private boolean mark;
 	private float cost;
 	private Node predecessor;
-
+	private boolean inHeap;
 	
 	
 	public Label(Node node) {
@@ -17,6 +17,7 @@ public class Label implements Comparable<Label>{
 		this.mark = false;
 		this.cost = Float.POSITIVE_INFINITY;
 		this.predecessor = null;
+		this.inHeap = false;
 		
 	}
 	public Node getNode() {
@@ -51,7 +52,13 @@ public class Label implements Comparable<Label>{
 		this.predecessor = predecessor;
 	}
 
-	
+	public boolean isInHeap() {
+		return this.inHeap;
+	}
+	public void setInHeap() {
+		this.inHeap = true;
+	}
+
 	
 	@Override
 	public int compareTo(Label other) {

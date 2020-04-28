@@ -26,6 +26,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         ArrayList <Label> Labels = new ArrayList<Label>();
         ArrayList <Node> Nodes= new ArrayList<Node>();
         BinaryHeap <Label> Heap = new BinaryHeap<Label>();
+        //int sizeGraph = graph.size();
+       // Label [] tabLabel = new Label[sizeGraph];
         //int indexorigin;
         for(int i = 0; i < nbNodes;i++) { //initialisation
         	Nodes.add(graph.get(i));
@@ -46,34 +48,54 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
       try {
         int count = 0;
-        while(count < nbNodes) {
-        	Label x = Heap.findMin();
-            Heap.deleteMin();
+        boolean fin = false;
+      while(count < nbNodes && fin == false) {
+        	
+        	Label x = Heap.deleteMin();
+        	if (x.getNode() == data.getDestination()) {
+				fin = true;
+			}
             int index = Labels.indexOf(x);
             Labels.get(index).setMark(true);
             notifyNodeReached(Labels.get(index).getNode());
             System.out.println("marquage"+count+"  "+nbNodes);
         	count++;
             for(int i = 0; i < x.getNode().getNumberOfSuccessors();i++) {
-            	int index2 = Nodes.indexOf(x.getNode().getSuccessors().get(i).getDestination());
-            	if(!Labels.get(index2).isMark()) {
-            		if(Labels.get(index2).getCost()>x.getCost()+x.getNode().getSuccessors().get(i).getLength()) {
-            			Labels.get(index2).setCost(x.getCost()+x.getNode().getSuccessors().get(i).getLength());
-            			Labels.get(index2).setPredecessor(x.getNode());
-            			try
-            	    	{
-            				Heap.remove(Labels.get(index2));
-            				Heap.insert(Labels.get(index2));
-            	    	}
-            	    	catch(ElementNotFoundException e) // 写法规定？ exception后面跟个e
-            	    	{
-            	    		Heap.insert(Labels.get(index2));
-            	    	}
+            	//int index2 = Nodes.indexOf(x.getNode().getSuccessors().get(i).getDestination());
+            	//Label tmp = Labels.get(index2);
+            	//Label tmp = tabLabel[x.getNode().getSuccessors().get(i).getDestination().getId()];
+            	Label tmp = Labels.get(x.getNode().getSuccessors().get(i).getDestination().getId());
+            	if(!tmp.isMark()) {
+            		if(tmp.getCost()>x.getCost()+x.getNode().getSuccessors().get(i).getLength()) {
+            			tmp.setCost(x.getCost()+x.getNode().getSuccessors().get(i).getLength());
+            			tmp.setPredecessor(x.getNode());
+            			/*
+            			{
+            				Heap.remove(tmp);
+            				Heap.insert(tmp);
+            				}
+            				catch(ElementNotFoundException e) // 写法规定？ exception后面跟个e
+            				{
+            					Heap.insert(tmp);	
+            				}*/
+            	
+            			if(!tmp.isInHeap()) {
+            				Heap.insert(tmp);	
+            			}
+            			else {
+            				Heap.remove(tmp);
+            				Heap.insert(tmp);
+            			}
+            			tmp.setInHeap(); 
+        
+            			
             		}
             		 
             	}
             }
-        }
+        } 
+       
+        
         	ArrayList<Arc> arcs = new ArrayList<>();
             // ArrayList<Node> chemin = new ArrayList<>();
               int indexdestination = Nodes.indexOf(data.getDestination()); 
@@ -83,20 +105,24 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
           	}
               
           	while(tmp.getPredecessor() != null) {
-          		boolean trouve = false;
-          		 try {
-                       for(int i = 0;i < tmp.getPredecessor().getNumberOfSuccessors() && !trouve; i++) {
-                      	if(tmp.getPredecessor().getSuccessors().get(i).getDestination()==tmp.getNode()) {
-                   		arcs.add(tmp.getPredecessor().getSuccessors().get(i));
-                   			    //change tmp
-                   		int index3 = Nodes.indexOf(tmp.getPredecessor());
-                   		System.out.println("arc");
-                   		tmp = Labels.get(index3);
-                   		trouve = true;
-                   		}
-                     }
+          		//boolean trouve = false;
+          		 try {  Arc arcmin = null;
+                       for(int i = 0;i < tmp.getPredecessor().getNumberOfSuccessors() ; i++) {
+                    	
+                      	if(arcmin == null && tmp.getPredecessor().getSuccessors().get(i).getDestination()==tmp.getNode()) {
+                      		arcmin = tmp.getPredecessor().getSuccessors().get(i);
+                        }
+                      	if(arcmin != null && arcmin.getLength()>tmp.getPredecessor().getSuccessors().get(i).getLength() &&  tmp.getPredecessor().getSuccessors().get(i).getDestination()==tmp.getNode())
+                      		arcmin = tmp.getPredecessor().getSuccessors().get(i);
+                       }
+                        arcs.add(arcmin);
+                  		int index3 = Nodes.indexOf(tmp.getPredecessor());
+                  		System.out.println("arc");
+                  		tmp = Labels.get(index3);
+                  		
                }
                catch(NullPointerException e2) {
+            	   System.out.println("NullPointerException e2");
                        System.out.println("sort");
                        Collections.reverse(arcs);
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
@@ -114,6 +140,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
       
       
       catch(EmptyPriorityQueueException e2) {
+    	  System.out.println("EmptyPriorityQueueException e2");
         	ArrayList<Arc> arcs = new ArrayList<>();
             // ArrayList<Node> chemin = new ArrayList<>();
               int indexdestination = Nodes.indexOf(data.getDestination()); 
@@ -122,20 +149,24 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
           		System.out.println(Labels.get(i).getPredecessor());
           	}
         	while(tmp.getPredecessor() != null) {
-          		boolean trouve = false;
+          		//boolean trouve = false;
           		 try {
-                       for(int i = 0;i < tmp.getPredecessor().getNumberOfSuccessors() && !trouve; i++) {
-                      	if(tmp.getPredecessor().getSuccessors().get(i).getDestination()==tmp.getNode()) {
-                   		arcs.add(tmp.getPredecessor().getSuccessors().get(i));
-                   			    //change tmp
-                   		int index3 = Nodes.indexOf(tmp.getPredecessor());
-                   		System.out.println("arc");
-                   		tmp = Labels.get(index3);
-                   		trouve = true;
-                   		}
+          			Arc arcmin = null;
+                    for(int i = 0;i < tmp.getPredecessor().getNumberOfSuccessors() ; i++) {
+                 	
+                   	if(arcmin == null && tmp.getPredecessor().getSuccessors().get(i).getDestination()==tmp.getNode()) {
+                   		arcmin = tmp.getPredecessor().getSuccessors().get(i);
                      }
+                   	if(arcmin != null && arcmin.getLength()>tmp.getPredecessor().getSuccessors().get(i).getLength() &&  tmp.getPredecessor().getSuccessors().get(i).getDestination()==tmp.getNode())
+                   		arcmin = tmp.getPredecessor().getSuccessors().get(i);
+                    }
+                     arcs.add(arcmin);
+               		int index3 = Nodes.indexOf(tmp.getPredecessor());
+               		System.out.println("arc");
+               		tmp = Labels.get(index3);
                }
                catch(NullPointerException e3) {
+            	   System.out.println("NullPointerException e3");
                        System.out.println("sort");
                        Collections.reverse(arcs);
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
