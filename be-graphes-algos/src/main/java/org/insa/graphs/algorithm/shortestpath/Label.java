@@ -39,6 +39,9 @@ public class Label implements Comparable<Label>{
 	public float getCost() {
 		return this.cost;
 	}
+	public float getTotalCost() {
+		return this.cost;
+	}
 
 	public void setCost(float cost) {
 		this.cost = cost;
@@ -63,17 +66,8 @@ public class Label implements Comparable<Label>{
 	@Override
 	public int compareTo(Label other) {
 		// TODO Auto-generated method stub
-		int result;
-		if (this.getCost() < other.getCost()) {
-			result = -1;
-		}
-		else if (this.getCost() == other.getCost()) {
-			result = 0;
-		}
-		else {
-			result = 1;
-		}
-		return result;
+		
+		return (int)(this.getTotalCost()-other.getTotalCost());
 	}
 	
 	

@@ -4,7 +4,6 @@ import java.util.Collections;
 
 import org.insa.graphs.algorithm.AbstractSolution.Status;
 import org.insa.graphs.algorithm.utils.BinaryHeap;
-import org.insa.graphs.algorithm.utils.ElementNotFoundException;
 import org.insa.graphs.algorithm.utils.EmptyPriorityQueueException;
 import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Graph;
@@ -17,7 +16,26 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
     }
 
-    @Override
+    public void initialisation(ArrayList <Node> Nodes,ArrayList <Label> Labels, BinaryHeap <Label> Heap) {
+    	final ShortestPathData data = getInputData();
+        Graph graph = data.getGraph();
+        final int nbNodes = graph.size();
+    	for(int i = 0; i < nbNodes;i++) { //initialisation
+         	Nodes.add(graph.get(i));
+         	if(data.getOrigin()==graph.get(i)) {
+         		//indexorigin = i;
+         		Label origin = new Label(graph.get(i));
+         		origin.setCost(0);
+         		Heap.insert(origin);
+         		Labels.add(origin);
+         	}
+         	else {
+         		Label tmp = new Label(graph.get(i));
+         		Labels.add(tmp);
+         	}
+         }
+    }
+
     protected ShortestPathSolution doRun() {
         final ShortestPathData data = getInputData();
         ShortestPathSolution solution = null;
@@ -26,27 +44,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         ArrayList <Label> Labels = new ArrayList<Label>();
         ArrayList <Node> Nodes= new ArrayList<Node>();
         BinaryHeap <Label> Heap = new BinaryHeap<Label>();
-        //int sizeGraph = graph.size();
-       // Label [] tabLabel = new Label[sizeGraph];
-        //int indexorigin;
-        for(int i = 0; i < nbNodes;i++) { //initialisation
-        	Nodes.add(graph.get(i));
-        	if(data.getOrigin()==graph.get(i)) {
-        		//indexorigin = i;
-        		Label origin = new Label(graph.get(i));
-        		origin.setCost(0);
-        		Heap.insert(origin);
-        		Labels.add(origin);
-        	}
-        	else {
-        		Label tmp = new Label(graph.get(i));
-        		Labels.add(tmp);
-        	}
-        }
-        
-        
-        
-      try {
+        initialisation(Nodes,Labels, Heap);
+     try {
         int count = 0;
         boolean fin = false;
       while(count < nbNodes && fin == false) {
@@ -55,19 +54,17 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	if (x.getNode() == data.getDestination()) {
 				fin = true;
 			}
-            int index = Labels.indexOf(x);
-            Labels.get(index).setMark(true);
-            notifyNodeReached(Labels.get(index).getNode());
+            //int index = Labels.indexOf(x);
+            Labels.get(x.getNode().getId()).setMark(true); //why node id can be used in labels???
+            notifyNodeReached(Labels.get(x.getNode().getId()).getNode());
             System.out.println("marquage"+count+"  "+nbNodes);
         	count++;
             for(int i = 0; i < x.getNode().getNumberOfSuccessors();i++) {
-            	//int index2 = Nodes.indexOf(x.getNode().getSuccessors().get(i).getDestination());
-            	//Label tmp = Labels.get(index2);
-            	//Label tmp = tabLabel[x.getNode().getSuccessors().get(i).getDestination().getId()];
             	Label tmp = Labels.get(x.getNode().getSuccessors().get(i).getDestination().getId());
             	if(!tmp.isMark()) {
-            		if(tmp.getCost()>x.getCost()+x.getNode().getSuccessors().get(i).getLength()) {
-            			tmp.setCost(x.getCost()+x.getNode().getSuccessors().get(i).getLength());
+            		float ttmp = x.getCost()+x.getNode().getSuccessors().get(i).getLength();
+            		if(tmp.getCost()> ttmp) {
+            			tmp.setCost(ttmp);
             			tmp.setPredecessor(x.getNode());
             			/*
             			{
@@ -116,7 +113,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                       		arcmin = tmp.getPredecessor().getSuccessors().get(i);
                        }
                         arcs.add(arcmin);
-                  		int index3 = Nodes.indexOf(tmp.getPredecessor());
+                  		//int index3 = Nodes.indexOf(tmp.getPredecessor());
+                        int index3 = tmp.getPredecessor().getId();
                   		System.out.println("arc");
                   		tmp = Labels.get(index3);
                   		
@@ -126,6 +124,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                        System.out.println("sort");
                        Collections.reverse(arcs);
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+                       Path tmpp =  new Path(graph, arcs);
+                       System.out.println(tmpp.isValid());
+                 
                        return solution;
                }
           		
@@ -134,6 +135,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
           	System.out.println("sort");
           	Collections.reverse(arcs);
           	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+          	Path tmpp =  new Path(graph, arcs);
+            System.out.println(tmpp.isValid());
           	return solution;
         }
       
@@ -161,7 +164,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                    		arcmin = tmp.getPredecessor().getSuccessors().get(i);
                     }
                      arcs.add(arcmin);
-               		int index3 = Nodes.indexOf(tmp.getPredecessor());
+                   //int index3 = Nodes.indexOf(tmp.getPredecessor());
+                     int index3 = tmp.getPredecessor().getId();
                		System.out.println("arc");
                		tmp = Labels.get(index3);
                }
@@ -170,6 +174,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                        System.out.println("sort");
                        Collections.reverse(arcs);
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+                       Path tmpp =  new Path(graph, arcs);
+                       System.out.println(tmpp.isValid());
                        return solution;
                }
           		
@@ -178,11 +184,12 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
           	System.out.println("sort");
           	Collections.reverse(arcs);
           	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+          	Path tmpp =  new Path(graph, arcs);
+            System.out.println(tmpp.isValid());
           	return solution;
         }
     
 
-          	
           	
           	
           	
