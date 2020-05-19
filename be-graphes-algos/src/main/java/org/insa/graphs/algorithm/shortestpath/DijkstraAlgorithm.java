@@ -19,6 +19,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     public void initialisation(ArrayList <Node> Nodes,ArrayList <Label> Labels, BinaryHeap <Label> Heap) {
     	final ShortestPathData data = getInputData();
         Graph graph = data.getGraph();
+       
         final int nbNodes = graph.size();
     	for(int i = 0; i < nbNodes;i++) { //initialisation
          	Nodes.add(graph.get(i));
@@ -36,7 +37,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
          }
     }
 
-    protected ShortestPathSolution doRun() {
+    public ShortestPathSolution doRun() {
         final ShortestPathData data = getInputData();
         ShortestPathSolution solution = null;
         Graph graph = data.getGraph();
@@ -44,6 +45,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         ArrayList <Label> Labels = new ArrayList<Label>();
         ArrayList <Node> Nodes= new ArrayList<Node>();
         BinaryHeap <Label> Heap = new BinaryHeap<Label>();
+        
+        if(data.getOrigin()==data.getDestination()) { //test de feasabilité
+        	return new ShortestPathSolution(data, Status.INFEASIBLE);
+        }
+        
         initialisation(Nodes,Labels, Heap);
      try {
         int count = 0;
@@ -123,6 +129,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             	   System.out.println("NullPointerException e2");
                        System.out.println("sort");
                        Collections.reverse(arcs);
+                       if(arcs.size()>0) {
+                    	   if(arcs.get(arcs.size()-1).getDestination() != data.getDestination())
+                        	   return new ShortestPathSolution(data, Status.INFEASIBLE);
+                       }
+                       else {
+                    	       return new ShortestPathSolution(data, Status.INFEASIBLE);
+                       }
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
                        Path tmpp =  new Path(graph, arcs);
                        System.out.println(tmpp.isValid());
@@ -173,6 +186,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             	   System.out.println("NullPointerException e3");
                        System.out.println("sort");
                        Collections.reverse(arcs);
+                       if(arcs.size()>0) {
+                    	   if(arcs.get(arcs.size()-1).getDestination() != data.getDestination())
+                        	   return new ShortestPathSolution(data, Status.INFEASIBLE);
+                       }
+                       else {
+                    	       return new ShortestPathSolution(data, Status.INFEASIBLE);
+                       }
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
                        Path tmpp =  new Path(graph, arcs);
                        System.out.println(tmpp.isValid());
@@ -183,6 +203,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
           	}
           	System.out.println("sort");
           	Collections.reverse(arcs);
+          	if(arcs.size()>0) {
+         	   if(arcs.get(arcs.size()-1).getDestination() != data.getDestination())
+             	   return new ShortestPathSolution(data, Status.INFEASIBLE);
+            }
+            else {
+         	       return new ShortestPathSolution(data, Status.INFEASIBLE);
+            }
           	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
           	Path tmpp =  new Path(graph, arcs);
             System.out.println(tmpp.isValid());
