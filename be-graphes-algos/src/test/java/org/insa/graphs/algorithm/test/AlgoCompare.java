@@ -82,7 +82,8 @@ public class AlgoCompare {
 		shortestPathData = new ShortestPathData(invalidGraph, nodes[0], nodes[1], listArcInspector.get(0));
 		dijkstraAlgorithm = new DijkstraAlgorithm(shortestPathData);
 		invalidPathSolution = dijkstraAlgorithm.doRun();
-		
+		assertTrue(!invalidPathSolution.isFeasible());
+		invalidPathSolution = dijkstraAlgorithm.doRun();
 		assertTrue(!invalidPathSolution.isFeasible());
 
 	}

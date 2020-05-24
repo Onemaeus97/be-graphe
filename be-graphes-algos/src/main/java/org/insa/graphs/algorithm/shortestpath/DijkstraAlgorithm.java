@@ -49,6 +49,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         if(data.getOrigin()==data.getDestination()) { //test de feasabilité
         	return new ShortestPathSolution(data, Status.INFEASIBLE);
         }
+        long startTime=System.currentTimeMillis();   //获取开始时间  
         
         initialisation(Nodes,Labels, Heap);
      try {
@@ -139,7 +140,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
                        Path tmpp =  new Path(graph, arcs);
                        System.out.println(tmpp.isValid());
-                 
+                       long endTime=System.currentTimeMillis(); //fin  
+                       System.out.println("temps effectué： "+(endTime-startTime)+"ms");  
                        return solution;
                }
           		
@@ -150,6 +152,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
           	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
           	Path tmpp =  new Path(graph, arcs);
             System.out.println(tmpp.isValid());
+            long endTime=System.currentTimeMillis(); //fin  
+            System.out.println("temps effectué： "+(endTime-startTime)+"ms");  
           	return solution;
         }
       
@@ -196,6 +200,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
                        Path tmpp =  new Path(graph, arcs);
                        System.out.println(tmpp.isValid());
+                       long endTime=System.currentTimeMillis(); //fin  
+                       System.out.println("temps effectué： "+(endTime-startTime)+"ms");  
                        return solution;
                }
           		
@@ -213,6 +219,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
           	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
           	Path tmpp =  new Path(graph, arcs);
             System.out.println(tmpp.isValid());
+            long endTime=System.currentTimeMillis(); //fin  
+            System.out.println("temps effectué： "+(endTime-startTime)+"ms");   
           	return solution;
         }
     
